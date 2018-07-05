@@ -1,0 +1,34 @@
+# This program computes fib numbers in a non-recursive manner
+
+	.data
+
+	.text 
+	.globl main
+
+main:
+	li $v0, 5
+	syscall
+	move $s0, $v0	
+	move $s1, $zero
+	addi $s2, $s2, 1
+	move $s3, $zero
+	move $s4, $zero
+	b LOOP
+
+LOOP:
+	add $s3, $s1, $s2
+	move $s1, $s2
+	move $s2, $s3
+        addi $s4, $s4, 1
+	slt $s5, $s4, $s0
+	bne $s5, $zero, LOOP
+	b EXIT
+
+EXIT:
+	li $v0, 1
+	move $a0, $s1
+	syscall
+	
+	li $v0, 10
+	syscall	
+

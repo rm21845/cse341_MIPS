@@ -1,0 +1,58 @@
+# This program reads three integers and prints the sum of the smallest two
+# Looked at examples from http://logos.cs.uic.edu/366/notes/mips%20quick%20tutorial.htm but nothing actually copied
+	.data
+
+	.text 
+	.globl main
+
+main:
+	li $v0, 5		# Load system call code for read_int
+	syscall
+	move $t0, $v0		# Move user input a into $t0
+
+	li $v0, 5#		# Load system call code for read_int
+	syscall
+	move $t1, $v0		# Move user input b into $t1
+
+	li $v0, 5		# Load system call code for read_int
+	syscall
+	move $t2, $v0		# Move user input c into $t2
+
+	slt $t3, $t0, $t1 	# If ($t0 = a) < ($t1 = b), $t3 = 1; 0 otherwise 
+	beq $t3, $zero, BLTA 	# If ($t0 = a) >= ($t1 = b) GOTO BLTA(b less than a)
+
+	move $t4, $t0		# Else, $t4(smallest) = a
+	move $t5, $t1		# And, $t5(smallest2) = b
+	b TESTC			# Branch to test a conditionals
+
+BLTA: 
+	move $t4, $t1		# $t4 = b
+	move $t5, $t0		# $t5 = a
+	b TESTC			# Branch to TESTC
+
+TESTC: 
+	slt $t0, $t2, $t4	# If c < smallest value, $t0 = 1; 0 otherwise
+	bne $t0, $zero, CLTS 	# If c < smallest value GOTO CLTS(c less than smallest)
+
+	slt $t0, $t2, $t5 	# If c < 2nd smallest value GOTO CLTS2(c less than second smallest)
+	bne $t0, $zero, CLTS2	# If c < 2nd smallest GOTO CLTS2
+	b EXIT
+	
+CLTS:
+	move $t0, $t4		# Temp for current smallest val 
+	move $t4, $t2		# c becomes smallest value
+	move $t5, $t0		# Previous smallest is now 2nd smallest
+	b EXIT
+
+CLTS2:
+	move $t5, $t2		# c becomes second smallest
+	b EXIT
+	
+EXIT:	
+	add $t4, $t4, $t5 	# $t4 0 sum of two smallest values
+	li $v0, 1
+	move $a0, $t4
+	syscall			# Print smallest value
+
+	li $v0, 10		#Load system call code to exit
+	syscall			#Exit
